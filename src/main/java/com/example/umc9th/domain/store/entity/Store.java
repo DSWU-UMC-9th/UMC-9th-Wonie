@@ -8,10 +8,9 @@ import java.util.List;
 
 @Entity
 @Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder(toBuilder = true)
 @Table(name = "store")
 public class Store {
 
@@ -33,6 +32,19 @@ public class Store {
     @JoinColumn(name = "location_id", nullable = false)
     private Location location;
 
-    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL)
+    @Builder.Default
+    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Mission> missions = new ArrayList<>();
+
+    public void changeName(String name) { this.name = name; }
+    public void changeManagerNumber(String managerNumber) { this.managerNumber = managerNumber; }
+    public void changeDetailAddress(String detailAddress) { this.detailAddress = detailAddress; }
+
+    public void addMission(Mission mission) {
+        this.missions.add(mission);
+    }
+
+    void setLocationInternal(Location location) {
+        this.location = location;
+    }
 }
