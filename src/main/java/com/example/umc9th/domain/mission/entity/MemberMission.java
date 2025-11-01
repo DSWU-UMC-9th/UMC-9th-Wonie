@@ -6,10 +6,9 @@ import lombok.*;
 
 @Entity
 @Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder(toBuilder = true)
 @Table(name = "member_mission")
 public class MemberMission {
 
@@ -19,6 +18,7 @@ public class MemberMission {
     private Long id;
 
     @Column(name = "is_complete", nullable = false)
+    @Builder.Default
     private Boolean isComplete = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -28,4 +28,9 @@ public class MemberMission {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
+
+    public void markComplete() {
+        this.isComplete = true;
+    }
+
 }

@@ -7,10 +7,9 @@ import java.util.List;
 
 @Entity
 @Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder(toBuilder = true)
 @Table(name = "location")
 public class Location {
 
@@ -22,6 +21,24 @@ public class Location {
     @Column(nullable = false, length = 50)
     private String name;
 
-    @OneToMany(mappedBy = "location", cascade = CascadeType.ALL)
+    @Builder.Default
+    @OneToMany(mappedBy = "location", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Store> stores = new ArrayList<>();
+
+    // 의미 있는 변경 메서드
+    public void changeName(String name) {
+        this.name = name;
+    }
+
+    // 양방향 편의 메서드
+    public void addStore(Store store) {
+        this.stores.add(store);
+        store.setLocationInternal(this); // private 세터로 내부에서만 연결
+    }
+
+    // 내부 전용(양방향 세팅용)
+    void removeStore(Store store) {
+        this.stores.remove(store);
+        store.setLocationInternal(null);
+    }
 }
