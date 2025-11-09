@@ -25,18 +25,15 @@ public class Location {
     @OneToMany(mappedBy = "location", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Store> stores = new ArrayList<>();
 
-    // 의미 있는 변경 메서드
     public void changeName(String name) {
         this.name = name;
     }
 
-    // 양방향 편의 메서드
     public void addStore(Store store) {
         this.stores.add(store);
-        store.setLocationInternal(this); // private 세터로 내부에서만 연결
+        store.setLocationInternal(this);
     }
 
-    // 내부 전용(양방향 세팅용)
     void removeStore(Store store) {
         this.stores.remove(store);
         store.setLocationInternal(null);
