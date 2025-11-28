@@ -6,6 +6,9 @@ import com.example.umc9th.domain.store.entity.QStore;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -15,7 +18,7 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<Review> findMyReviews(Long memberId, String storeName, Integer rating) {
+    public Page<Review> findMyReviews(Long memberId, String storeName, Integer rating, Pageable pageable) {
         QReview review = QReview.review;
         QStore store = QStore.store;
 
@@ -36,11 +39,25 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
             }
         }
 
-        return queryFactory
+        // content 조회
+        List<Review> content = queryFactory
                 .selectFrom(review)
-                .join(review.store, store).fetchJoin() // fetch join으로 N+1 방지
+                .join(review.store, store).fetchJoin()
                 .where(builder)
                 .orderBy(review.createdAt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
+
+        // count 조회
+        Long total = queryFactory
+                .select(review.count())
+                .from(review)
+                .where(builder)
+                .fetchOne();
+
+        long totalCount = total != null ? total : 0L;
+
+        return new PageImpl<>(content, pageable, totalCount);
     }
 }

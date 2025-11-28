@@ -2,11 +2,17 @@ package com.example.umc9th.domain.review.service;
 
 import com.example.umc9th.domain.member.entity.Member;
 import com.example.umc9th.domain.member.repository.MemberRepository;
+import com.example.umc9th.domain.review.converter.ReviewConverter;
+import com.example.umc9th.domain.review.dto.res.ReviewResDTO;
 import com.example.umc9th.domain.review.entity.Review;
 import com.example.umc9th.domain.review.repository.ReviewRepository;
 import com.example.umc9th.domain.store.entity.Store;
 import com.example.umc9th.domain.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,8 +26,20 @@ public class ReviewService {
     private final StoreRepository storeRepository;
     private final MemberRepository memberRepository;
 
-    public List<Review> getMyReviews(Long memberId, String storeName, Integer rating) {
-        return reviewRepository.findMyReviews(memberId, storeName, rating);
+    private static final int PAGE_SIZE = 10;
+
+    @Transactional(readOnly = true)
+    public ReviewResDTO.MyReviewPageDTO getMyReviews(
+            Long memberId,
+            String storeName,
+            Integer rating,
+            int page   // 1 이상
+    ) {
+        Pageable pageable = PageRequest.of(page - 1, PAGE_SIZE, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        Page<Review> reviewPage = reviewRepository.findMyReviews(memberId, storeName, rating, pageable);
+
+        return ReviewConverter.toMyReviewPageDTO(reviewPage);
     }
 
     @Transactional
