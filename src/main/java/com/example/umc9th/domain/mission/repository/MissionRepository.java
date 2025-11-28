@@ -11,4 +11,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface MissionRepository extends JpaRepository<Mission, Long> {
+    Page<Mission> findByStore_Id(Long storeId, Pageable pageable);
+
 }

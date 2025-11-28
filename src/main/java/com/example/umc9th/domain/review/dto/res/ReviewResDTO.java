@@ -9,8 +9,30 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class ReviewResDTO {
+
+    @Getter
+    @Builder
+    public static class MyReviewItemDTO {
+        private Long reviewId;
+        private String content;
+        private Float rating;
+        private String storeName;
+        private LocalDateTime createdAt;
+    }
+
+    @Getter
+    @Builder
+    public static class MyReviewPageDTO {
+        private List<MyReviewItemDTO> reviews;
+        private int currentPage;
+        private int totalPages;
+        private long totalElements;
+        private boolean first;
+        private boolean last;
+    }
 
     @Getter
     @Builder
