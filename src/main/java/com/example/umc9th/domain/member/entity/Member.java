@@ -2,8 +2,11 @@ package com.example.umc9th.domain.member.entity;
 
 import com.example.umc9th.domain.mission.entity.MemberMission;
 import com.example.umc9th.domain.review.entity.Review;
+import com.example.umc9th.global.auth.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +19,8 @@ import java.util.List;
 @Table(name = "member")
 public class Member {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
     private Long id;
 
@@ -26,8 +30,29 @@ public class Member {
     @Column(nullable = false, unique = true, length = 100)
     private String email;
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false)
+    private String password;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
+
+    @Column(name = "phone_number", nullable = false, length = 20)
     private String phoneNumber;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Gender gender;
+
+    @Column(name = "birth_date", nullable = false)
+    private LocalDate birth;
+
+    @Column(name = "detail_address", nullable = false)
+    private String specAddress;
+
+    // ★ 여기 추가
+    @Column(name = "oauth_id")
+    private String oauthId;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -51,5 +76,8 @@ public class Member {
     }
 
     @PreUpdate
-    void onUpdate() { this.updatedAt = LocalDateTime.now(); }
+    void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }
+
