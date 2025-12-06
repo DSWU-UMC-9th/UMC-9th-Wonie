@@ -7,15 +7,14 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
+import java.util.Optional;
+
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
-//    @Query("""
-//        select distinct m
-//        from Member m
-//        left join fetch m.reviews
-//        left join fetch m.memberMissions
-//        where m.id = :memberId
-//    """)
-//    Optional<Member> findMemberDetail(@Param("memberId") Long memberId);
+    // 이메일로 Member 조회 (로그인용)
+    Optional<Member> findByEmail(String email);
+
+    // 이메일 중복 체크용 (회원가입 시)
+    boolean existsByEmail(String email);
 }
 
